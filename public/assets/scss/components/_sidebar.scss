@@ -1,0 +1,10 @@
+.sidebar {
+  width: $sidebar-width;
+  display: flex;
+  flex-direction: column;
+}
+@include respond-to(md) {
+  .sidebar {
+    min-height: 100vh;
+  }
+}

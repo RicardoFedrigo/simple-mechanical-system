@@ -1,0 +1,66 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f8fafc;
+}
+
+body {
+  color: #111827;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+.btn-primary {
+  border-radius: 12px;
+}
+
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.card {
+  border-radius: 18px;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.form-control, .form-select {
+  border-radius: 12px;
+}
+
+.sidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    min-height: 100vh;
+  }
+}
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.auth-card {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/*# sourceMappingURL=app.css.map */

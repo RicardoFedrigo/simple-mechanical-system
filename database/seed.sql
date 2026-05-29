@@ -1,0 +1,2 @@
+-- Seed admin account after running the migration.
+-- Example admin login: admin@workshop.test / admin123
