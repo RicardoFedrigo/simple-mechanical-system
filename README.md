@@ -17,3 +17,8 @@ A pure OOP PHP 8+ workshop ERP using MVC, repository/service pattern, PDO, Boots
 - Bootstrap 5 dashboard skeleton
 - Repository + service layer architecture
 - SCSS assets and Dockerized environment
+
+## UML
+
+NOT FINISH YET! Changes will be made
+![previus uml](docs/image_name.png)
