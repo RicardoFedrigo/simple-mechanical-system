@@ -1,4 +1,5 @@
-<?php $title = 'Login'; ob_start(); ?>
+<?php $title = 'Login';
+ob_start(); ?>
 <div class="row justify-content-center">
   <div class="col-md-6 col-lg-5">
     <div class="card shadow-sm border-0">
@@ -21,4 +22,5 @@
     </div>
   </div>
 </div>
-<?php $content = ob_get_clean(); require __DIR__ . '/../layouts/auth.php'; ?>
+<?php $content = ob_get_clean();
+require __DIR__ . '/../layouts/auth.php'; ?>

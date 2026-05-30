@@ -8,9 +8,7 @@ use App\Services\AuthService;
 
 class AuthController extends BaseController
 {
-    public function __construct(private AuthService $authService)
-    {
-    }
+    public function __construct(private AuthService $authService) {}
 
     public function loginForm(Request $request): string
     {
@@ -25,7 +23,6 @@ class AuthController extends BaseController
 
         if (!$this->authService->login($email, $password)) {
             flash('error', 'Invalid credentials.');
-            $this->redirect('/login');
         }
 
         $this->redirect('/dashboard');

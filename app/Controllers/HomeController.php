@@ -7,18 +7,34 @@ use App\Core\Request;
 
 class HomeController extends BaseController
 {
-    public function dashboard(Request $request): string
+    public function dashboard(Request $request)
     {
-        return $this->view('dashboard/index', [
-            'title' => 'Workshop Dashboard',
-            'user' => $_SESSION['user'] ?? [],
-            'stats' => [
-                'customers' => 18,
-                'vehicles' => 12,
-                'finished' => 7,
-                'revenue' => '$24,500',
-            ],
-        ]);
+
+        $userRole = $_SESSION['user']['role'] ?? '';
+
+        if (!isset($_SESSION['user'])) {
+            $this->redirect('/login');
+        }
+
+        switch ($userRole) {
+            case 'Admin':
+                return $this->view('dashboard/Admin', [
+                    'title' => 'Admin Dashboard',
+                    'user' => $_SESSION['user'] ?? [],
+                ]);
+            case 'Mechanic':
+                return $this->view('dashboard/Mechanic', [
+                    'title' => 'Mechanic Dashboard',
+                    'user' => $_SESSION['user'] ?? [],
+                ]);
+            case 'Attendant':
+                return $this->view('dashboard/Attendant', [
+                    'title' => 'Attendant Dashboard',
+                    'user' => $_SESSION['user'] ?? [],
+                ]);
+            default:
+                $this->redirect('/login');
+        }
     }
 
     public function customers(Request $request): string

@@ -6,14 +6,13 @@ use App\Repositories\UserRepository;
 
 class AuthService
 {
-    public function __construct(private UserRepository $userRepository)
-    {
-    }
+    public function __construct(private UserRepository $userRepository) {}
 
     public function login(string $email, string $password): bool
     {
         $user = $this->userRepository->findByEmail($email);
         if (!$user || !password_verify($password, $user['password_hash'])) {
+
             return false;
         }
 

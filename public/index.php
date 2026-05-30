@@ -18,7 +18,12 @@ if (file_exists($envFile)) {
 }
 
 $router = new App\Core\Router();
+require __DIR__ . '/../routes/api.php';
 require __DIR__ . '/../routes/web.php';
 
 $request = new App\Core\Request();
-$router->dispatch($request);
+$response = $router->dispatch($request);
+
+if ($response !== null) {
+    echo $response;
+}

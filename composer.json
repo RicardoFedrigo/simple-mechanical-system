@@ -11,6 +11,7 @@
     }
   },
   "scripts": {
-    "post-autoload-dump": "php -r \"echo 'autoload ready\\n';\""
+    "post-autoload-dump": "php -r \"echo 'autoload ready\\n';\"",
+    "migrate": "php database/migrate.php"
   }
 }
