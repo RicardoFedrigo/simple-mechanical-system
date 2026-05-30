@@ -21,4 +21,4 @@ A pure OOP PHP 8+ workshop ERP using MVC, repository/service pattern, PDO, Boots
 ## UML
 
 NOT FINISH YET! Changes will be made
-![previus uml](docs/image_name.png)
+![previus uml](docs/workshop_uml.png)
