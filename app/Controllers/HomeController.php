@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\BaseController;
 use App\Core\Request;
+use App\Services\Customers\GetCustomerListService;
 
 class HomeController extends BaseController
 {
@@ -39,7 +40,16 @@ class HomeController extends BaseController
 
     public function customers(Request $request): string
     {
-        return $this->view('customers/index', ['title' => 'Customers']);
+        $query = $request->query();
+        $filters = [
+            'term' => trim($query['term'] ?? ''),
+            'vehicle_plate' => trim($query['vehicle_plate'] ?? ''),
+        ];
+
+        $service = new GetCustomerListService();
+        $customers = $service->execute(array_filter($filters));
+
+        return $this->view('customers/index', ['title' => 'Customers', 'customers' => $customers, 'filters' => $filters]);
     }
 
     public function reports(Request $request): string

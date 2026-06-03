@@ -24,8 +24,9 @@ ob_start(); ?>
       <option value="COMPLETED" <?= $status === 'COMPLETED' ? 'selected' : '' ?>>COMPLETED</option>
     </select>
   </div>
-  <div class="col-auto">
+  <div class="col-auto d-flex">
     <button type="submit" class="btn btn-outline-primary">Filter</button>
+    <a href="/orders" class="btn btn-outline-secondary ms-2">Clear</a>
   </div>
 </form>
 
