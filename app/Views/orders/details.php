@@ -98,6 +98,15 @@ ob_start(); ?>
 <?php endif; ?>
 
 <div class="card shadow-sm border-0 mb-4">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">Service Description</h6>
+        </div>
+        <div class="card-body">
+            <p class="mb-0"><?= nl2br(htmlspecialchars($order['service_description'] ?? 'No description provided.')) ?></p>
+        </div>
+    </div>
+
     <div class="card-header bg-light">
         <h6 class="mb-0">Service Items & Parts</h6>
     </div>

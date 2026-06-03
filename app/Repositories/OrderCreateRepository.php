@@ -38,10 +38,10 @@ class OrderCreateRepository extends BaseModel
         return (int) $this->db->lastInsertId();
     }
 
-    public function createServiceOrder(int $customerId, ?int $vehicleId, ?int $mechanicId, string $status, float $subtotal, float $tax, float $total): int
+    public function createServiceOrder(int $customerId, ?int $vehicleId, ?int $mechanicId, string $status, float $subtotal, float $tax, float $total, ?string $serviceDescription = null): int
     {
         $query = $this->db->prepare(
-            'INSERT INTO service_orders (customer_id, vehicle_id, mechanic_id, status, subtotal, tax, total) VALUES (:customer_id, :vehicle_id, :mechanic_id, :status, :subtotal, :tax, :total)'
+            'INSERT INTO service_orders (customer_id, vehicle_id, mechanic_id, status, subtotal, tax, total, service_description) VALUES (:customer_id, :vehicle_id, :mechanic_id, :status, :subtotal, :tax, :total, :service_description)'
         );
         $query->execute([
             'customer_id' => $customerId,
@@ -51,24 +51,11 @@ class OrderCreateRepository extends BaseModel
             'subtotal' => $subtotal,
             'tax' => $tax,
             'total' => $total,
+            'service_description' => $serviceDescription,
         ]);
 
         return (int) $this->db->lastInsertId();
     }
 
-    public function createServiceOrderItem(int $serviceOrderId, string $description, int $quantity, float $unitPrice, float $total): int
-    {
-        $query = $this->db->prepare(
-            'INSERT INTO service_order_items (service_order_id, description, quantity, unit_price, total) VALUES (:service_order_id, :description, :quantity, :unit_price, :total)'
-        );
-        $query->execute([
-            'service_order_id' => $serviceOrderId,
-            'description' => $description,
-            'quantity' => $quantity,
-            'unit_price' => $unitPrice,
-            'total' => $total,
-        ]);
-
-        return (int) $this->db->lastInsertId();
-    }
+    // Service order items insertion handled by dedicated flows when needed.
 }

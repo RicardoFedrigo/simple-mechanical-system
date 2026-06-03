@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS service_orders (
   total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  service_description TEXT NULL,
   FOREIGN KEY (customer_id) REFERENCES customers(id),
   FOREIGN KEY (vehicle_id) REFERENCES vehicles(id),
   FOREIGN KEY (mechanic_id) REFERENCES mechanics(id)
@@ -87,7 +88,6 @@ CREATE TABLE IF NOT EXISTS service_orders (
 CREATE TABLE IF NOT EXISTS service_order_items (
   id INT AUTO_INCREMENT PRIMARY KEY,
   service_order_id INT NOT NULL,
-  description VARCHAR(255) NOT NULL,
   quantity INT NOT NULL DEFAULT 1,
   unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
