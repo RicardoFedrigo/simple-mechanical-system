@@ -3,24 +3,27 @@
 namespace App\Repositories;
 
 use App\Core\BaseModel;
-use Override;
 use PDO;
 
 class OrdersRepository extends BaseModel
 {
-
     public function findById(int $id): ?array
     {
-        $query =  $this->db->prepare('SELECT * FROM orders WHERE id = :id LIMIT 1');
+        $query = $this->db->prepare(
+            'SELECT * FROM service_orders WHERE id = :id LIMIT 1'
+        );
         $query->execute(['id' => $id]);
+
         return $query->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function findOrdersOpen(): ?array
+    public function findOrdersOpen(): array
     {
+        $query = $this->db->prepare(
+            'SELECT * FROM service_orders WHERE status = :status'
+        );
+        $query->execute(['status' => 'Open']);
 
-        $query = $this->db->prepare('SELECT * FROM service_orders so WHERE so.status = \'Open\'');
-
-        return $query->fetch(PDO::FETCH_ASSOC);
+        return $query->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 }

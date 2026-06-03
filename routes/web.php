@@ -16,6 +16,7 @@ $router->get('/reports', [new HomeController(), 'reports'], [AuthMiddleware::cla
 $router->get('/orders', [new OrderController(), 'index'], [AuthMiddleware::class]);
 $router->get('/orders/create', [new OrderController(), 'create'], [AuthMiddleware::class]);
 $router->post('/orders', [new OrderController(), 'store'], [AuthMiddleware::class]);
+$router->post('/orders/status', [new OrderController(), 'updateStatus'], [AuthMiddleware::class]);
 $router->get('/orders/*', [new OrderController(), 'show'], [AuthMiddleware::class]);
 
 $router->get('/login', [new AuthController(new App\Services\AuthService(new App\Repositories\UserRepository())), 'loginForm'], [GuestMiddleware::class]);

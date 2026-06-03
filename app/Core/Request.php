@@ -23,4 +23,29 @@ class Request
     {
         return $this->method() === 'POST';
     }
+
+    public function isGet(): bool
+    {
+        return $this->method() === 'GET';
+    }
+
+    /**
+     * Return all query string parameters from the current GET request.
+     *
+     * @return array<string, mixed>
+     */
+    public function query(): array
+    {
+        return $_GET ?? [];
+    }
+
+    /**
+     * Alias for query() to match common request helper patterns.
+     *
+     * @return array<string, mixed>
+     */
+    public function all(): array
+    {
+        return $this->query();
+    }
 }

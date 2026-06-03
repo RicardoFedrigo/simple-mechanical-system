@@ -8,7 +8,7 @@ class View
     {
         extract($data, EXTR_SKIP);
         $file = __DIR__ . '/../Views/' . $template . '.php';
-        echo $file;
+       
         if (!file_exists($file)) {
             throw new \RuntimeException('View not found: ' . $template);
         }

@@ -2,8 +2,32 @@
 ob_start(); ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h5 class="card-title mb-0">Service Orders</h5>
-  <a href="/orders/create" class="btn btn-primary btn-sm">Create Order</a>
+  <?php if (($currentRole ?? '') !== 'Mechanic'): ?>
+    <a href="/orders/create" class="btn btn-primary btn-sm">Create Order</a>
+  <?php endif; ?>
 </div>
+
+<?php if (($currentRole ?? '') === 'Mechanic'): ?>
+  <div class="alert alert-info mb-3">Showing only service orders assigned to you.</div>
+<?php endif; ?>
+<form method="get" action="/orders" class="row g-2 mb-3">
+  <?php $term = htmlspecialchars($_GET['term'] ?? '');
+  $status = htmlspecialchars($_GET['status'] ?? ''); ?>
+  <div class="col-auto">
+    <input type="search" name="term" value="<?= $term ?>" class="form-control" placeholder="Search by customer name">
+  </div>
+  <div class="col-auto">
+    <select name="status" class="form-select">
+      <option value="" <?= $status === '' ? 'selected' : '' ?>>All statuses</option>
+      <option value="PENDING" <?= $status === 'PENDING' ? 'selected' : '' ?>>PENDING</option>
+      <option value="IN_PROGRESS" <?= $status === 'IN_PROGRESS' ? 'selected' : '' ?>>IN PROGRESS</option>
+      <option value="COMPLETED" <?= $status === 'COMPLETED' ? 'selected' : '' ?>>COMPLETED</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-outline-primary">Filter</button>
+  </div>
+</form>
 
 <div class="card shadow-sm border-0">
   <div class="table-responsive">

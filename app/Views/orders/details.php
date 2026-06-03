@@ -52,6 +52,30 @@ ob_start(); ?>
     </div>
 </div>
 
+<?php if (($currentRole ?? '') === 'Mechanic' && !empty($currentUserId) && $order['mechanic_user_id'] === $currentUserId): ?>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">Update Order Status</h6>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/orders/status">
+                <input type="hidden" name="order_id" value="<?= htmlspecialchars($order['id']) ?>">
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" name="status" class="form-select">
+                        <?php foreach (['PENDING' => 'PENDING', 'IN_PROGRESS' => 'IN PROGRESS', 'COMPLETED' => 'COMPLETED'] as $value => $label): ?>
+                            <option value="<?= $value ?>" <?= $order['status'] === $value ? 'selected' : '' ?>>
+                                <?= $label ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </form>
+        </div>
+    </div>
+<?php endif; ?>
+
 <?php if (!empty($order['plate_number'])): ?>
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-light">
