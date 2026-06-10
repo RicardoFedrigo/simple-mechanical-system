@@ -3,6 +3,9 @@
 namespace App\Repositories;
 
 use App\Core\BaseModel;
+use App\Models\Customer;
+use App\Models\EntityMapper;
+use App\Models\Vehicle;
 use PDO;
 
 class CustomerListRepository extends BaseModel
@@ -11,7 +14,7 @@ class CustomerListRepository extends BaseModel
      * Return customers with optional filters: 'term' (name/phone/email) and 'vehicle_plate'
      *
      * @param array $filters
-     * @return array
+     * @return Customer[]
      */
     public function findAll(array $filters = []): array
     {
@@ -53,31 +56,36 @@ class CustomerListRepository extends BaseModel
         $stmt->execute($params);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-        // Aggregate vehicles per customer
-        $results = [];
+        $customers = [];
         foreach ($rows as $row) {
             $cid = (int)$row['customer_id'];
-            if (!isset($results[$cid])) {
-                $results[$cid] = [
+            if (!isset($customers[$cid])) {
+                $customers[$cid] = EntityMapper::toCustomer([
                     'id' => $cid,
                     'name' => $row['customer_name'],
                     'phone' => $row['customer_phone'],
                     'email' => $row['customer_email'],
                     'created_at' => $row['customer_created_at'],
-                    'vehicles' => [],
-                ];
+                    'updated_at' => '',
+                ]);
             }
 
             if (!empty($row['vehicle_id'])) {
-                $results[$cid]['vehicles'][] = [
+                $vehicle = EntityMapper::toVehicle([
                     'id' => (int)$row['vehicle_id'],
+                    'customer_id' => $cid,
+                    'car_brand_id' => $row['car_brand_id'] ?? null,
                     'plate_number' => $row['plate_number'],
                     'model' => $row['model'],
                     'year' => $row['year'] !== null ? (int)$row['year'] : null,
-                ];
+                    'status' => $row['status'] ?? 'ENTERED',
+                    'created_at' => '',
+                    'updated_at' => '',
+                ]);
+                $customers[$cid]->addVehicle($vehicle);
             }
         }
 
-        return array_values($results);
+        return array_values($customers);
     }
 }

@@ -2,13 +2,15 @@
 
 namespace App\Services\Orders;
 
+use App\Models\ServiceOrder;
+use App\Models\ServiceOrderItem;
 use App\Repositories\OrderListRepository;
 
 class GetOrderByIdService
 {
     public function __construct(private OrderListRepository $orderListRepository = new OrderListRepository()) {}
 
-    public function execute(int $id): ?array
+    public function execute(int $id): ?ServiceOrder
     {
         return $this->orderListRepository->findById($id);
     }

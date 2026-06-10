@@ -2,38 +2,35 @@
 
 namespace App\Models;
 
-class User
+class Mechanic
 {
     private int $id = 0;
     private string $name = '';
-    private string $email = '';
-    private string $password = '';
-    private int $roleId = 0;
-    private bool $active = true;
+    private ?string $specialty = null;
+    private ?string $phone = null;
     private string $createdAt = '';
     private string $updatedAt = '';
-    private ?Role $role = null;
+    private int $userId = 0;
+    private ?User $user = null;
 
     public function __construct(
         int $id = 0,
         string $name = '',
-        string $email = '',
-        string $password = '',
-        int $roleId = 0,
-        bool $active = true,
+        ?string $specialty = null,
+        ?string $phone = null,
         string $createdAt = '',
         string $updatedAt = '',
-        ?Role $role = null
+        int $userId = 0,
+        ?User $user = null
     ) {
         $this->id = $id;
         $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
-        $this->roleId = $roleId;
-        $this->active = $active;
+        $this->specialty = $specialty;
+        $this->phone = $phone;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
-        $this->role = $role;
+        $this->userId = $userId;
+        $this->user = $user;
     }
 
     public function getId(): int
@@ -58,47 +55,25 @@ class User
         return $this;
     }
 
-    public function getEmail(): string
+    public function getSpecialty(): ?string
     {
-        return $this->email;
+        return $this->specialty;
     }
 
-    public function setEmail(string $email): self
+    public function setSpecialty(?string $specialty): self
     {
-        $this->email = $email;
+        $this->specialty = $specialty;
         return $this;
     }
 
-    public function getPassword(): string
+    public function getPhone(): ?string
     {
-        return $this->password;
+        return $this->phone;
     }
 
-    public function setPassword(string $password): self
+    public function setPhone(?string $phone): self
     {
-        $this->password = $password;
-        return $this;
-    }
-
-    public function getRoleId(): int
-    {
-        return $this->roleId;
-    }
-
-    public function setRoleId(int $roleId): self
-    {
-        $this->roleId = $roleId;
-        return $this;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
+        $this->phone = $phone;
         return $this;
     }
 
@@ -124,14 +99,25 @@ class User
         return $this;
     }
 
-    public function getRole(): ?Role
+    public function getUserId(): int
     {
-        return $this->role;
+        return $this->userId;
     }
 
-    public function setRole(?Role $role): self
+    public function setUserId(int $userId): self
     {
-        $this->role = $role;
+        $this->userId = $userId;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
         return $this;
     }
 }

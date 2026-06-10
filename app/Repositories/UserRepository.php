@@ -3,11 +3,13 @@
 namespace App\Repositories;
 
 use App\Core\BaseModel;
+use App\Models\EntityMapper;
+use App\Models\User;
 use PDO;
 
 class UserRepository extends BaseModel
 {
-    public function findByEmail(string $email): ?array
+    public function findByEmail(string $email): ?User
     {
         $stmt = $this->db->prepare("SELECT
 	                                    u.id ,
@@ -25,13 +27,14 @@ class UserRepository extends BaseModel
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $user ?: null;
+        return $user ? EntityMapper::toUser($user) : null;
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $id): ?User
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
         $stmt->execute(['id' => $id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $data ? EntityMapper::toUser($data) : null;
     }
 }

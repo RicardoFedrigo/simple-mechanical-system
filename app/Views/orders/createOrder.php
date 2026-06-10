@@ -59,8 +59,8 @@ ob_start(); ?>
                         <option value="">Select a brand</option>
                         <?php if (!empty($vehicle_brands)): ?>
                             <?php foreach ($vehicle_brands as $brand): ?>
-                                <option value="<?= htmlspecialchars($brand['id']) ?>">
-                                    <?= htmlspecialchars($brand['name']) ?>
+                                <option value="<?= htmlspecialchars($brand->getId()) ?>">
+                                    <?= htmlspecialchars($brand->getName()) ?>
                                 </option>
                             <?php endforeach; ?>
                         <?php endif; ?>

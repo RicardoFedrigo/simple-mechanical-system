@@ -4,6 +4,7 @@ namespace App\Services\Orders;
 
 use App\Repositories\OrderCreateRepository;
 use App\Services\Customers\CreateCustomerService;
+use App\Services\Mechanics\DelegateOrderToMechanicService;
 use App\Services\Vehicles\CreateVehicleService;
 
 class CreateService
@@ -11,7 +12,8 @@ class CreateService
     public function __construct(
         private OrderCreateRepository $orderCreateRepository = new OrderCreateRepository(),
         private CreateCustomerService $createCustomerService = new CreateCustomerService(),
-        private CreateVehicleService $createVehicleService = new CreateVehicleService()
+        private CreateVehicleService $createVehicleService = new CreateVehicleService(),
+        private DelegateOrderToMechanicService $delegateOrderToMechanicService = new DelegateOrderToMechanicService() 
     ) {}
 
     public function execute(array $data): int
@@ -66,6 +68,9 @@ class CreateService
             $description
         );
 
+
+        $this->delegateOrderToMechanicService->execute($orderId);
+            
         return $orderId;
     }
 }

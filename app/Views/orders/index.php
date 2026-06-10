@@ -52,18 +52,18 @@ ob_start(); ?>
         <?php else: ?>
           <?php foreach ($tickets as $ticket): ?>
             <tr>
-              <td><strong>#<?= htmlspecialchars($ticket['id']) ?></strong></td>
-              <td><?= htmlspecialchars($ticket['customer_name'] ?? 'N/A') ?></td>
-              <td><?= htmlspecialchars($ticket['vehicle_model'] ?? 'N/A') ?></td>
-              <td><strong>$<?= number_format((float)$ticket['total'], 2) ?></strong></td>
+              <td><strong>#<?= htmlspecialchars($ticket->getId()) ?></strong></td>
+              <td><?= htmlspecialchars($ticket->getCustomer()?->getName() ?? 'N/A') ?></td>
+              <td><?= htmlspecialchars($ticket->getVehicle()?->getModel() ?? 'N/A') ?></td>
+              <td><strong>$<?= number_format($ticket->getTotal(), 2) ?></strong></td>
               <td>
-                <span class="badge bg-<?= $ticket['status'] === 'COMPLETED' ? 'success' : ($ticket['status'] === 'IN_PROGRESS' ? 'warning' : 'secondary') ?>">
-                  <?= htmlspecialchars($ticket['status']) ?>
+                <span class="badge bg-<?= $ticket->getStatus() === 'COMPLETED' ? 'success' : ($ticket->getStatus() === 'IN_PROGRESS' ? 'warning' : 'secondary') ?>">
+                  <?= htmlspecialchars($ticket->getStatus()) ?>
                 </span>
               </td>
-              <td><?= htmlspecialchars(substr($ticket['created_at'] ?? 'N/A', 0, 10)) ?></td>
+              <td><?= htmlspecialchars(substr($ticket->getCreatedAt() ?? 'N/A', 0, 10)) ?></td>
               <td>
-                <a href="/orders/<?= htmlspecialchars($ticket['id']) ?>" class="btn btn-sm btn-outline-primary">View</a>
+                <a href="/orders/<?= htmlspecialchars($ticket->getId()) ?>" class="btn btn-sm btn-outline-primary">View</a>
               </td>
             </tr>
           <?php endforeach; ?>

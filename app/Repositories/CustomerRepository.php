@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Core\BaseModel;
+use App\Models\EntityMapper;
+use App\Models\Customer;
 use PDO;
 
 class CustomerRepository extends BaseModel
@@ -73,7 +75,7 @@ class CustomerRepository extends BaseModel
         return array_values($results);
     }
 
-    public function findByEmailOrPhone(?string $email, ?string $phone): ?array
+    public function findByEmailOrPhone(?string $email, ?string $phone): ?Customer
     {
         if (empty($email) && empty($phone)) {
             return null;
@@ -97,7 +99,8 @@ class CustomerRepository extends BaseModel
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $data ? EntityMapper::toCustomer($data) : null;
     }
 
     public function create(array $data): int
@@ -117,6 +120,7 @@ class CustomerRepository extends BaseModel
     public function findAll(): array
     {
         $stmt = $this->db->query('SELECT id, name, phone, email FROM customers ORDER BY name ASC');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        return array_map(fn($row) => EntityMapper::toCustomer($row), $data);
     }
 }

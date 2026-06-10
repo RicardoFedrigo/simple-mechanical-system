@@ -2,38 +2,32 @@
 
 namespace App\Models;
 
-class User
+class InventoryPart
 {
     private int $id = 0;
     private string $name = '';
-    private string $email = '';
-    private string $password = '';
-    private int $roleId = 0;
-    private bool $active = true;
+    private string $sku = '';
+    private int $quantity = 0;
+    private float $price = 0.00;
     private string $createdAt = '';
     private string $updatedAt = '';
-    private ?Role $role = null;
 
     public function __construct(
         int $id = 0,
         string $name = '',
-        string $email = '',
-        string $password = '',
-        int $roleId = 0,
-        bool $active = true,
+        string $sku = '',
+        int $quantity = 0,
+        float $price = 0.00,
         string $createdAt = '',
-        string $updatedAt = '',
-        ?Role $role = null
+        string $updatedAt = ''
     ) {
         $this->id = $id;
         $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
-        $this->roleId = $roleId;
-        $this->active = $active;
+        $this->sku = $sku;
+        $this->quantity = $quantity;
+        $this->price = $price;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
-        $this->role = $role;
     }
 
     public function getId(): int
@@ -58,47 +52,36 @@ class User
         return $this;
     }
 
-    public function getEmail(): string
+    public function getSku(): string
     {
-        return $this->email;
+        return $this->sku;
     }
 
-    public function setEmail(string $email): self
+    public function setSku(string $sku): self
     {
-        $this->email = $email;
+        $this->sku = $sku;
         return $this;
     }
 
-    public function getPassword(): string
+    public function getQuantity(): int
     {
-        return $this->password;
+        return $this->quantity;
     }
 
-    public function setPassword(string $password): self
+    public function setQuantity(int $quantity): self
     {
-        $this->password = $password;
+        $this->quantity = $quantity;
         return $this;
     }
 
-    public function getRoleId(): int
+    public function getPrice(): float
     {
-        return $this->roleId;
+        return $this->price;
     }
 
-    public function setRoleId(int $roleId): self
+    public function setPrice(float $price): self
     {
-        $this->roleId = $roleId;
-        return $this;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
+        $this->price = $price;
         return $this;
     }
 
@@ -121,17 +104,6 @@ class User
     public function setUpdatedAt(string $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
-    public function getRole(): ?Role
-    {
-        return $this->role;
-    }
-
-    public function setRole(?Role $role): self
-    {
-        $this->role = $role;
         return $this;
     }
 }

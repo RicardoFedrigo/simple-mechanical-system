@@ -1,7 +1,7 @@
-<?php $title = 'Order #' . htmlspecialchars($order['id']);
+<?php $title = 'Order #' . htmlspecialchars($order->getId());
 ob_start(); ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h5 class="card-title mb-0">Order #<?= htmlspecialchars($order['id']) ?></h5>
+    <h5 class="card-title mb-0">Order #<?= htmlspecialchars($order->getId()) ?></h5>
     <a href="/orders" class="btn btn-secondary btn-sm">Back to Orders</a>
 </div>
 
@@ -16,18 +16,18 @@ ob_start(); ?>
                     <tr>
                         <td><strong>Status:</strong></td>
                         <td>
-                            <span class="badge bg-<?= $order['status'] === 'COMPLETED' ? 'success' : ($order['status'] === 'IN_PROGRESS' ? 'warning' : 'secondary') ?>">
-                                <?= htmlspecialchars($order['status']) ?>
+                            <span class="badge bg-<?= $order->getStatus() === 'COMPLETED' ? 'success' : ($order->getStatus() === 'IN_PROGRESS' ? 'warning' : 'secondary') ?>">
+                                <?= htmlspecialchars($order->getStatus()) ?>
                             </span>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Created:</strong></td>
-                        <td><?= htmlspecialchars(substr($order['created_at'], 0, 10)) ?></td>
+                        <td><?= htmlspecialchars(substr($order->getCreatedAt(), 0, 10)) ?></td>
                     </tr>
                     <tr>
                         <td><strong>Mechanic:</strong></td>
-                        <td><?= htmlspecialchars($order['mechanic_name'] ?? 'Not assigned') ?></td>
+                        <td><?= htmlspecialchars($order->getMechanicName()  ?? 'Not assigned') ?></td>
                     </tr>
                 </table>
             </div>
@@ -40,31 +40,31 @@ ob_start(); ?>
                 <h6 class="mb-0">Customer Information</h6>
             </div>
             <div class="card-body">
-                <p class="mb-2"><strong><?= htmlspecialchars($order['customer_name'] ?? 'N/A') ?></strong></p>
+                <p class="mb-2"><strong><?= htmlspecialchars($order->getCustomerName() ?? 'N/A') ?></strong></p>
                 <p class="mb-1 text-muted small">
-                    <strong>Phone:</strong> <?= htmlspecialchars($order['customer_phone'] ?? 'N/A') ?>
+                    <strong>Phone:</strong> <?= htmlspecialchars($order->getCustomerPhone() ?? 'N/A') ?>
                 </p>
                 <p class="mb-0 text-muted small">
-                    <strong>Email:</strong> <?= htmlspecialchars($order['customer_email'] ?? 'N/A') ?>
+                    <strong>Email:</strong> <?= htmlspecialchars($order->getCustomerEmail() ?? 'N/A') ?>
                 </p>
             </div>
         </div>
     </div>
 </div>
 
-<?php if (($currentRole ?? '') === 'Mechanic' && !empty($currentUserId) && $order['mechanic_user_id'] === $currentUserId): ?>
+<?php if (($currentRole ?? '') === 'Mechanic' && !empty($currentUserId) && $order->getMechanicUserId() === $currentUserId): ?>
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-light">
             <h6 class="mb-0">Update Order Status</h6>
         </div>
         <div class="card-body">
             <form method="post" action="/orders/status">
-                <input type="hidden" name="order_id" value="<?= htmlspecialchars($order['id']) ?>">
+                <input type="hidden" name="order_id" value="<?= htmlspecialchars($order->getId()) ?>">
                 <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
                     <select id="status" name="status" class="form-select">
                         <?php foreach (['PENDING' => 'PENDING', 'IN_PROGRESS' => 'IN PROGRESS', 'COMPLETED' => 'COMPLETED'] as $value => $label): ?>
-                            <option value="<?= $value ?>" <?= $order['status'] === $value ? 'selected' : '' ?>>
+                            <option value="<?= $value ?>" <?= $order->getStatus() === $value ? 'selected' : '' ?>>
                                 <?= $label ?>
                             </option>
                         <?php endforeach; ?>
@@ -76,7 +76,7 @@ ob_start(); ?>
     </div>
 <?php endif; ?>
 
-<?php if (!empty($order['plate_number'])): ?>
+<?php if (!empty($order->getPlateNumber())): ?>
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-light">
             <h6 class="mb-0">Vehicle Information</h6>
@@ -84,13 +84,13 @@ ob_start(); ?>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p class="mb-2"><strong>Plate Number:</strong> <?= htmlspecialchars($order['plate_number']) ?></p>
+                    <p class="mb-2"><strong>Plate Number:</strong> <?= htmlspecialchars($order->getPlateNumber()) ?></p>
                 </div>
                 <div class="col-md-6">
-                    <p class="mb-2"><strong>Model:</strong> <?= htmlspecialchars($order['vehicle_model'] ?? 'N/A') ?></p>
+                    <p class="mb-2"><strong>Model:</strong> <?= htmlspecialchars($order->getVehicleModel() ?? 'N/A') ?></p>
                 </div>
                 <div class="col-md-6">
-                    <p class="mb-0"><strong>Year:</strong> <?= htmlspecialchars($order['vehicle_year'] ?? 'N/A') ?></p>
+                    <p class="mb-0"><strong>Year:</strong> <?= htmlspecialchars($order->getVehicleYear() ?? 'N/A') ?></p>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@ ob_start(); ?>
             <h6 class="mb-0">Service Description</h6>
         </div>
         <div class="card-body">
-            <p class="mb-0"><?= nl2br(htmlspecialchars($order['service_description'] ?? 'No description provided.')) ?></p>
+            <p class="mb-0"><?= nl2br(htmlspecialchars($order->getServiceDescription() ?? 'No description provided.')) ?></p>
         </div>
     </div>
 
@@ -146,16 +146,16 @@ ob_start(); ?>
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                     <span>Subtotal:</span>
-                    <strong>$<?= number_format((float)$order['subtotal'], 2) ?></strong>
+                    <strong>$<?= number_format((float)$order->getSubtotal(), 2) ?></strong>
                 </div>
                 <div class="d-flex justify-content-between mb-3">
                     <span>Tax:</span>
-                    <strong>$<?= number_format((float)$order['tax'], 2) ?></strong>
+                    <strong>$<?= number_format((float)$order->getTax(), 2) ?></strong>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between">
                     <span class="h5 mb-0">Total:</span>
-                    <strong class="h5 mb-0">$<?= number_format((float)$order['total'], 2) ?></strong>
+                    <strong class="h5 mb-0">$<?= number_format((float)$order->getTotal(), 2) ?></strong>
                 </div>
             </div>
         </div>

@@ -2,38 +2,36 @@
 
 namespace App\Models;
 
-class User
+class Customer
 {
     private int $id = 0;
     private string $name = '';
-    private string $email = '';
-    private string $password = '';
-    private int $roleId = 0;
-    private bool $active = true;
+    private ?string $phone = null;
+    private ?string $email = null;
+    private ?string $notes = null;
     private string $createdAt = '';
     private string $updatedAt = '';
-    private ?Role $role = null;
+    /** @var Vehicle[] */
+    private array $vehicles = [];
 
     public function __construct(
         int $id = 0,
         string $name = '',
-        string $email = '',
-        string $password = '',
-        int $roleId = 0,
-        bool $active = true,
+        ?string $phone = null,
+        ?string $email = null,
+        ?string $notes = null,
         string $createdAt = '',
         string $updatedAt = '',
-        ?Role $role = null
+        array $vehicles = []
     ) {
         $this->id = $id;
         $this->name = $name;
+        $this->phone = $phone;
         $this->email = $email;
-        $this->password = $password;
-        $this->roleId = $roleId;
-        $this->active = $active;
+        $this->notes = $notes;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
-        $this->role = $role;
+        $this->vehicles = $vehicles;
     }
 
     public function getId(): int
@@ -58,47 +56,36 @@ class User
         return $this;
     }
 
-    public function getEmail(): string
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
         return $this;
     }
 
-    public function getPassword(): string
+    public function getNotes(): ?string
     {
-        return $this->password;
+        return $this->notes;
     }
 
-    public function setPassword(string $password): self
+    public function setNotes(?string $notes): self
     {
-        $this->password = $password;
-        return $this;
-    }
-
-    public function getRoleId(): int
-    {
-        return $this->roleId;
-    }
-
-    public function setRoleId(int $roleId): self
-    {
-        $this->roleId = $roleId;
-        return $this;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
+        $this->notes = $notes;
         return $this;
     }
 
@@ -124,14 +111,26 @@ class User
         return $this;
     }
 
-    public function getRole(): ?Role
+    /**
+     * @return Vehicle[]
+     */
+    public function getVehicles(): array
     {
-        return $this->role;
+        return $this->vehicles;
     }
 
-    public function setRole(?Role $role): self
+    /**
+     * @param Vehicle[] $vehicles
+     */
+    public function setVehicles(array $vehicles): self
     {
-        $this->role = $role;
+        $this->vehicles = $vehicles;
+        return $this;
+    }
+
+    public function addVehicle(Vehicle $vehicle): self
+    {
+        $this->vehicles[] = $vehicle;
         return $this;
     }
 }
