@@ -19,6 +19,11 @@ function csrf_token(): string
     return $_SESSION['csrf_token'];
 }
 
+function csrf_field(): string
+{
+    return '<input type="hidden" name="_token" value="' . csrf_token() . '">';
+}
+
 function flash(string $key, string $message = ''): ?string
 {
     if ($message !== '') {

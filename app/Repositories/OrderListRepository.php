@@ -10,7 +10,49 @@ use PDO;
 
 class OrderListRepository extends BaseModel
 {
-    public function findAll(array $filters = []): array
+    public function count(array $filters = []): int
+    {
+        $sql = "SELECT COUNT(*)
+            FROM service_orders so
+            LEFT JOIN customers c ON c.id = so.customer_id
+            LEFT JOIN vehicles v ON v.id = so.vehicle_id
+            LEFT JOIN mechanics m ON m.id = so.mechanic_id
+        ";
+
+        $conditions = [];
+        $params = [];
+
+        if (!empty($filters['term'])) {
+            $conditions[] = 'c.name LIKE :term';
+            $params['term'] = '%' . $filters['term'] . '%';
+        }
+
+        if (!empty($filters['status'])) {
+            $conditions[] = 'so.status = :status';
+            $params['status'] = $filters['status'];
+        }
+
+        if (!empty($filters['mechanic_user_id'])) {
+            $conditions[] = 'm.user_id = :mechanic_user_id';
+            $params['mechanic_user_id'] = $filters['mechanic_user_id'];
+        }
+
+        if (!empty($filters['customer_id'])) {
+            $conditions[] = 'so.customer_id = :customer_id';
+            $params['customer_id'] = $filters['customer_id'];
+        }
+
+        if (!empty($conditions)) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        $query = $this->db->prepare($sql);
+        $query->execute($params);
+
+        return (int)$query->fetchColumn();
+    }
+
+    public function findAll(array $filters = [], int $limit = 20, int $offset = 0): array
     {
         // Supports optional filters: ['term' => string, 'status' => string, 'mechanic_user_id' => int]
         $sql = "SELECT
@@ -69,14 +111,25 @@ class OrderListRepository extends BaseModel
             $params['mechanic_user_id'] = $filters['mechanic_user_id'];
         }
 
+        if (!empty($filters['customer_id'])) {
+            $conditions[] = 'so.customer_id = :customer_id';
+            $params['customer_id'] = $filters['customer_id'];
+        }
+
         if (!empty($conditions)) {
             $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
-        $sql .= ' ORDER BY so.created_at DESC';
+        $sql .= ' ORDER BY so.created_at DESC LIMIT :limit OFFSET :offset';
 
         $query = $this->db->prepare($sql);
-        $query->execute($params);
+        $params['limit'] = (int)$limit;
+        $params['offset'] = (int)$offset;
+        
+        foreach ($params as $key => $value) {
+            $query->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+        }
+        $query->execute();
 
         return array_map(function ($data) {
             $customer = EntityMapper::toCustomer([

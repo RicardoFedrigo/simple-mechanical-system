@@ -11,7 +11,8 @@
 <div class="card shadow-sm border-0">
   <div class="card-body">
     <form method="post" action="/admin/users/<?= htmlspecialchars($user->getId()) ?>/edit">
-      <div class="mb-3">
+        <?= csrf_field() ?>
+        <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input id="name" name="name" type="text" class="form-control" value="<?= htmlspecialchars($user->getName()) ?>" required>
       </div>

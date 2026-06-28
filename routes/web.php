@@ -20,6 +20,7 @@ $router->get('/', [$homeController, 'dashboard'], [AuthMiddleware::class]);
 $router->get('/dashboard', [$homeController, 'dashboard'], [AuthMiddleware::class]);
 $router->get('/customers', [$homeController, 'customers'], [AuthMiddleware::class]);
 $router->get('/customers/*/orders', [$customerController, 'orders'], [AuthMiddleware::class]);
+$router->get('/customers/*', [$customerController, 'show'], [AuthMiddleware::class]);
 $router->get('/reports', [$homeController, 'reports'], [AuthMiddleware::class]);
 
 $orderController = new OrderController();
@@ -38,11 +39,10 @@ $router->post('/logout', [$authController, 'logout'], [AuthMiddleware::class]);
 
 $adminController = new AdminController();
 
-$router->get('/admin/dashboard', [$adminController, 'dashboard'], [AuthMiddleware::class, AdminMiddleware::class]);
 $router->get('/admin/users', [$adminController, 'users'], [AuthMiddleware::class, AdminMiddleware::class]);
 $router->get('/admin/users/*/edit', [$adminController, 'editUser'], [AuthMiddleware::class, AdminMiddleware::class]);
 $router->post('/admin/users/*/edit', [$adminController, 'updateUser'], [AuthMiddleware::class, AdminMiddleware::class]);
 $router->post('/admin/users/*/deactivate', [$adminController, 'deactivateUser'], [AuthMiddleware::class, AdminMiddleware::class]);
+$router->post('/admin/users/*/activate', [$adminController, 'activateUser'], [AuthMiddleware::class, AdminMiddleware::class]);
 $router->get('/admin/users/*', [$adminController, 'userDetails'], [AuthMiddleware::class, AdminMiddleware::class]);
-$router->get('/admin/settings', [$adminController, 'settings'], [AuthMiddleware::class, AdminMiddleware::class]);
 

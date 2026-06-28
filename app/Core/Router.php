@@ -19,6 +19,13 @@ class Router
 
     public function dispatch(Request $request): mixed
     {
+        // Simple CSRF check for POST requests
+        if ($request->isPost() && !$this->isValidCsrf($request)) {
+            http_response_code(403);
+            echo "Invalid CSRF Token.";
+            return null;
+        }
+
         foreach ($this->routes as $route) {
             if ($route['method'] === $request->method() && $this->matchPath($route['path'], $request->uri())) {
                 foreach ($route['middleware'] as $middlewareClass) {
@@ -35,6 +42,12 @@ class Router
         http_response_code(404);
         echo View::render('404', ['title' => 'Page Not Found']);
         return null;
+    }
+
+    private function isValidCsrf(Request $request): bool
+    {
+        $token = $request->input('_token');
+        return !empty($token) && hash_equals($_SESSION['csrf_token'] ?? '', $token);
     }
 
     private function matchPath(string $pattern, string $uri): bool

@@ -71,5 +71,15 @@ ob_start(); ?>
     </table>
   </div>
 </div>
+
+<nav class="mt-3">
+    <ul class="pagination">
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                <a class="page-link" href="/orders?page=<?= $i ?>&term=<?= $filters['term'] ?>&status=<?= $filters['status'] ?>"><?= $i ?></a>
+            </li>
+        <?php endfor; ?>
+    </ul>
+</nav>
 <?php $content = ob_get_clean();
 require __DIR__ . '/../layouts/dashboard.php'; ?>

@@ -60,13 +60,17 @@ ob_start(); ?>
     </div>
 </div>
 
-<?php if (($currentRole ?? '') === 'Mechanic' && !empty($currentUserId) && ($order->getMechanic()?->getUserId() ?? 0) === $currentUserId && $order->getStatus() !== 'COMPLETED'): ?>
+<?php $canModify = (in_array(($currentRole ?? ''), ['Mechanic', 'Admin'])) && 
+             (($currentRole === 'Admin') || ($order->getMechanic()?->getUserId() === $currentUserId)); ?>
+
+<?php if ($canModify && $order->getStatus() !== 'COMPLETED'): ?>
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-light">
             <h6 class="mb-0">Update Order Status</h6>
         </div>
         <div class="card-body">
             <form method="post" action="/orders/status">
+                <?= csrf_field() ?>
                 <input type="hidden" name="order_id" value="<?= htmlspecialchars($order->getId()) ?>">
                 <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
@@ -117,14 +121,14 @@ ob_start(); ?>
 
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h6 class="mb-0">Service, Items & Parts</h6>
-        <?php if (($currentRole ?? '') === 'Mechanic' && !empty($currentUserId) && ($order->getMechanic()?->getUserId() ?? 0) === $currentUserId && $order->getStatus() !== 'COMPLETED'): ?>
+        <?php if ($canModify && $order->getStatus() !== 'COMPLETED'): ?>
             <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#addItemCollapse" aria-expanded="false" aria-controls="addItemCollapse">
                 Add Item
             </button>
         <?php endif; ?>
     </div>
     
-    <?php if (($currentRole ?? '') === 'Mechanic' && !empty($currentUserId) && ($order->getMechanic()?->getUserId() ?? 0) === $currentUserId && $order->getStatus() !== 'COMPLETED'): ?>
+    <?php if ($canModify && $order->getStatus() !== 'COMPLETED'): ?>
 <div class="collapse" id="addItemCollapse">
     <div class="card card-body border-0 bg-light">
         <div class="row mb-3">
@@ -138,6 +142,7 @@ ob_start(); ?>
             </div>
         </div>
         <form method="post" action="/orders/add-item" id="addItemForm">
+            <?= csrf_field() ?>
             <input type="hidden" name="order_id" value="<?= htmlspecialchars($order->getId()) ?>">
             <input type="hidden" name="item_id" id="item_id">
             <div class="row">

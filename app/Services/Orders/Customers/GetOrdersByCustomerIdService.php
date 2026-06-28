@@ -2,19 +2,19 @@
 
 namespace App\Services\Orders\Customers;
 
-use App\Repositories\OrdersRepository;
+use App\Repositories\OrderListRepository;
 
 class GetOrdersByCustomerIdService
 {
-    private OrdersRepository $repository;
+    private OrderListRepository $repository;
 
-    public function __construct(OrdersRepository $repository)
+    public function __construct(OrderListRepository $repository = new OrderListRepository())
     {
         $this->repository = $repository;
     }
 
     public function execute(int $customerId): array
     {
-        return $this->repository->findByCustomerId($customerId);
+        return $this->repository->findAll(['customer_id' => $customerId]);
     }
 }

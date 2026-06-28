@@ -88,6 +88,12 @@ class UserRepository extends BaseModel
         return $stmt->execute(['id' => $id]);
     }
 
+    public function activate(int $id): bool
+    {
+        $stmt = $this->db->prepare('UPDATE users SET active = 1 WHERE id = :id');
+        return $stmt->execute(['id' => $id]);
+    }
+
     public function update(int $id, string $name, string $email, int $roleId, bool $active): bool
     {
         $stmt = $this->db->prepare(

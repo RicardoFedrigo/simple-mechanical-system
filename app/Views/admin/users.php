@@ -49,7 +49,12 @@
                   <a href="/admin/users/<?= htmlspecialchars($user->getId()) ?>" class="btn btn-sm btn-outline-primary">Details</a>
                   <a href="/admin/users/<?= htmlspecialchars($user->getId()) ?>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
                   <form method="post" action="/admin/users/<?= htmlspecialchars($user->getId()) ?>/deactivate">
+                    <?= csrf_field() ?>
                     <button type="submit" class="btn btn-sm btn-outline-danger" <?= (!$user->isActive() || $user->getId() === ($currentUserId ?? null)) ? 'disabled' : '' ?>>Exclude</button>
+                  </form>
+                  <form method="post" action="/admin/users/<?= htmlspecialchars($user->getId()) ?>/activate">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-sm btn-outline-success" <?= ($user->isActive()) ? 'disabled' : '' ?>>Activate</button>
                   </form>
                 </div>
               </td>

@@ -14,8 +14,14 @@ class GetOrderListService
      * @param array $filters ['term' => string, 'status' => string, 'mechanic_user_id' => int]
      * @return array
      */
-    public function execute(array $filters = []): array
+    public function execute(array $filters = [], int $page = 1, int $limit = 20): array
     {
-        return $this->orderListRepository->findAll($filters);
+        $offset = ($page - 1) * $limit;
+        return $this->orderListRepository->findAll($filters, $limit, $offset);
+    }
+
+    public function count(array $filters = []): int
+    {
+        return $this->orderListRepository->count($filters);
     }
 }

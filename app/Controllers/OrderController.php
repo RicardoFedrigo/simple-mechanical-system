@@ -47,18 +47,26 @@ class OrderController extends BaseController
             'term' => trim($query['term'] ?? ''),
             'status' => trim($query['status'] ?? ''),
         ];
+        
+        $page = (int)($query['page'] ?? 1);
+        $limit = 20;
 
         $user = $_SESSION['user'] ?? [];
         if (($user['role'] ?? '') === 'Mechanic' && !empty($user['id'])) {
             $filters['mechanic_user_id'] = $user['id'];
         }
 
-        $orders = $this->getOrderListService->execute(array_filter($filters));
+        $orders = $this->getOrderListService->execute(array_filter($filters), $page, $limit);
+        $totalOrders = $this->getOrderListService->count(array_filter($filters));
+        $totalPages = ceil($totalOrders / $limit);
 
         return $this->view('orders/index', [
             'title' => 'Service Orders',
             'tickets' => $orders,
             'currentRole' => $user['role'] ?? null,
+            'page' => $page,
+            'totalPages' => $totalPages,
+            'filters' => $filters,
         ]);
     }
 
@@ -80,7 +88,7 @@ class OrderController extends BaseController
         }
 
         $user = $_SESSION['user'] ?? [];
-        if (($user['role'] ?? '') === 'Mechanic') {
+        if (($user['role'] ?? '') === 'Mechanic' && ($user['role'] ?? '') !== 'Admin') {
             if (($order->getMechanic()?->getUserId() ?? 0) !== ($user['id'] ?? 0)) {
                 http_response_code(403);
                 return $this->view('404', ['message' => 'Order not found']);
@@ -165,10 +173,11 @@ class OrderController extends BaseController
 
         $user = $_SESSION['user'] ?? [];
         $userId = $user['id'] ?? 0;
+        $role = $user['role'] ?? '';
 
-        if (($user['role'] ?? '') !== 'Mechanic') {
+        if ($role !== 'Mechanic' && $role !== 'Admin') {
             http_response_code(403);
-            flash('error', 'Only mechanics can add items.');
+            flash('error', 'Only mechanics or admins can add items.');
             $this->redirect('/orders/' . $orderId);
         }
 

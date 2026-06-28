@@ -119,8 +119,16 @@ class CustomerRepository extends BaseModel
 
     public function findAll(): array
     {
-        $stmt = $this->db->query('SELECT id, name, phone, email FROM customers ORDER BY name ASC');
+        $stmt = $this->db->query('SELECT id, name, phone, email, created_at, updated_at FROM customers ORDER BY name ASC');
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         return array_map(fn($row) => EntityMapper::toCustomer($row), $data);
+    }
+
+    public function findById(int $id): ?Customer
+    {
+        $stmt = $this->db->prepare('SELECT * FROM customers WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $data ? EntityMapper::toCustomer($data) : null;
     }
 }

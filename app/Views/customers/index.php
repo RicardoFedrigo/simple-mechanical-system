@@ -54,7 +54,8 @@ ob_start(); ?>
               </td>
               <td><?= htmlspecialchars(substr($cust->getCreatedAt() ?? '', 0, 10)) ?></td>
               <td class="text-end">
-                <a href="/customers/<?= htmlspecialchars($cust['id']) ?>/orders" class="btn btn-sm btn-outline-info">Orders</a>
+                <a href="/customers/<?= htmlspecialchars($cust->getId()) ?>" class="btn btn-sm btn-outline-primary">Details</a>
+                <a href="/customers/<?= htmlspecialchars($cust->getId()) ?>/orders" class="btn btn-sm btn-outline-info">Orders</a>
               </td>
             </tr>
           <?php endforeach; ?>

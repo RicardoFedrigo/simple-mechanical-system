@@ -12,7 +12,7 @@ ob_start(); ?>
         <?php endif; ?>
 
         <form method="post" action="/orders" class="needs-validation">
-            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+            <?= csrf_field() ?>
 
             <div class="mb-3">
                 <label class="form-label">Search Customer</label>

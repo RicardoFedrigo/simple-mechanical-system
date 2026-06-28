@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\BaseController;
 use App\Core\Request;
 use App\Repositories\UserRepository;
+use App\Services\Users\ActivateUserService;
 use App\Services\Users\DeactivateUserService;
 use App\Services\Users\UpdateUserService;
 
@@ -12,18 +13,15 @@ class AdminController extends BaseController
 {
     private UserRepository $userRepository;
     private DeactivateUserService $deactivateUserService;
+    private ActivateUserService $activateUserService;
     private UpdateUserService $updateUserService;
 
     public function __construct()
     {
         $this->userRepository = new UserRepository();
         $this->deactivateUserService = new DeactivateUserService($this->userRepository);
+        $this->activateUserService = new ActivateUserService($this->userRepository);
         $this->updateUserService = new UpdateUserService($this->userRepository);
-    }
-
-    public function dashboard(Request $request): string
-    {
-        return $this->view('admin/dashboard', ['title' => 'Admin Dashboard']);
     }
 
     public function users(Request $request): string
@@ -105,9 +103,18 @@ class AdminController extends BaseController
         $this->redirect('/admin/users');
     }
 
-    public function settings(Request $request): string
+    public function activateUser(Request $request): void
     {
-        return $this->view('admin/settings', ['title' => 'Settings']);
+        $id = $this->getUserIdFromUri($request->uri());
+
+        try {
+            $this->activateUserService->execute($id);
+            flash('success', 'User activated successfully.');
+        } catch (\Throwable $e) {
+            flash('error', $e->getMessage());
+        }
+
+        $this->redirect('/admin/users');
     }
 
     private function getUserIdFromUri(string $uri): int

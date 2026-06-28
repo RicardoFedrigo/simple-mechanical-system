@@ -18,11 +18,12 @@
           <a class="nav-link text-white" href="/customers">Customers</a>
         <?php endif; ?>
         <a class="nav-link text-white" href="/orders">Orders</a>
-        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'Admin' || $_SESSION['user']['role'] === 'Attendant'): ?>
-          <a class="nav-link text-white" href="/admin/dashboard">Admin</a>
+        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'Admin'): ?>
+          <a class="nav-link text-white" href="/admin/users">Users</a>
         <?php endif; ?>
       </nav>
       <form class="mt-auto" method="post" action="/logout">
+        <?= csrf_field() ?>
         <button class="btn btn-outline-light btn-sm w-100">Logout</button>
       </form>
     </aside>

@@ -23,11 +23,11 @@ ob_start(); ?>
             <td colspan="5" class="text-center text-muted py-4">No orders found for this customer.</td>
           </tr>
         <?php else: ?>
-          <?php foreach ($orders as $order): ?>
+            <?php foreach ($orders as $order): ?>
             <tr>
               <td>#<?= htmlspecialchars($order->getId()) ?></td>
               <td>
-                <span class="badge bg-<?= $order->getStatus() === 'COMPLETED' ? 'success' : 'warning' ?>">
+                <span class="badge bg-<?= $order->getStatus() === 'COMPLETED' ? 'success' : ($order->getStatus() === 'IN_PROGRESS' ? 'warning' : 'secondary') ?>">
                   <?= htmlspecialchars($order->getStatus()) ?>
                 </span>
               </td>
