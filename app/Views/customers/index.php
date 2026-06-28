@@ -28,6 +28,7 @@ ob_start(); ?>
           <th>Phone</th>
           <th>Vehicle(s)</th>
           <th>Created</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -38,20 +39,23 @@ ob_start(); ?>
         <?php else: ?>
           <?php foreach ($customers as $cust): ?>
             <tr>
-              <td><?= htmlspecialchars($cust['name']) ?></td>
-              <td><?= htmlspecialchars($cust['phone'] ?? '') ?>
-                <div class="text-muted small"><?= htmlspecialchars($cust['email'] ?? '') ?></div>
+              <td><?= htmlspecialchars($cust->getName()) ?></td>
+              <td><?= htmlspecialchars($cust->getPhone() ?? '') ?>
+                <div class="text-muted small"><?= htmlspecialchars($cust->getEmail() ?? '') ?></div>
               </td>
               <td>
-                <?php if (empty($cust['vehicles'])): ?>
+                <?php if (empty($cust->getVehicles())): ?>
                   <span class="text-muted">No vehicles</span>
                 <?php else: ?>
-                  <?php foreach ($cust['vehicles'] as $v): ?>
-                    <div><?= htmlspecialchars($v['plate_number'] ?? '') ?> — <?= htmlspecialchars($v['model'] ?? '') ?></div>
+                  <?php foreach ($cust->getVehicles() as $v): ?>
+                    <div><?= htmlspecialchars($v->getPlateNumber() ?? '') ?> — <?= htmlspecialchars($v->getModel() ?? '') ?></div>
                   <?php endforeach; ?>
                 <?php endif; ?>
               </td>
-              <td><?= htmlspecialchars(substr($cust['created_at'] ?? '', 0, 10)) ?></td>
+              <td><?= htmlspecialchars(substr($cust->getCreatedAt() ?? '', 0, 10)) ?></td>
+              <td class="text-end">
+                <a href="/customers/<?= htmlspecialchars($cust['id']) ?>/orders" class="btn btn-sm btn-outline-info">Orders</a>
+              </td>
             </tr>
           <?php endforeach; ?>
         <?php endif; ?>

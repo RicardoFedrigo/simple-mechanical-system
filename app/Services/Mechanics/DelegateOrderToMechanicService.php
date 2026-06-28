@@ -35,6 +35,8 @@ class DelegateOrderToMechanicService
             throw new InvalidArgumentException('No mechanics available for delegation.');
         }
 
+
+
         // Delegate the order by assigning mechanic and updating status to IN_PROGRESS
         return $this->orderListRepository->assignMechanicToOrder($orderId, $mechanicIdSelected);
     }

@@ -58,12 +58,12 @@ CREATE TABLE IF NOT EXISTS mechanics (
   FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS inventory_parts (
+CREATE TABLE IF NOT EXISTS items (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   sku VARCHAR(50) NOT NULL UNIQUE,
   quantity INT NOT NULL DEFAULT 0,
-  price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -85,16 +85,26 @@ CREATE TABLE IF NOT EXISTS service_orders (
   FOREIGN KEY (mechanic_id) REFERENCES mechanics(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS orders_queue (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  status ENUM('PENDING', 'WORKING', 'CLOSED') NOT NULL DEFAULT 'PENDING',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (order_id) REFERENCES service_orders(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS service_order_items (
   id INT AUTO_INCREMENT PRIMARY KEY,
   service_order_id INT NOT NULL,
+  items_id INT NOT NULL,
   quantity INT NOT NULL DEFAULT 1,
-  unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  FOREIGN KEY (items_id) REFERENCES items(id) ON DELETE CASCADE,
   FOREIGN KEY (service_order_id) REFERENCES service_orders(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS audit_inventory_parts (
+CREATE TABLE IF NOT EXISTS audit_items_parts (
 	  id INT AUTO_INCREMENT PRIMARY KEY,
 	  part_id INT NOT NULL,
 	  action_type ENUM('INSERT', 'DELETE') NOT NULL,
@@ -103,7 +113,7 @@ CREATE TABLE IF NOT EXISTS audit_inventory_parts (
 	    COMMENT 'The actual should be the same in inventory_parts, if is not equal means a instability',
 	  changed_by VARCHAR(255) DEFAULT NULL,
 	  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
-	  FOREIGN KEY (part_id) REFERENCES inventory_parts(id)
+	  FOREIGN KEY (part_id) REFERENCES items(id)
 	  )
 
 INSERT INTO roles (name) VALUES ('Admin'), ('Mechanic'), ('Attendant') ON DUPLICATE KEY UPDATE name = name;

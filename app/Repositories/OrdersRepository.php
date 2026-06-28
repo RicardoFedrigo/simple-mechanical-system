@@ -20,6 +20,19 @@ class OrdersRepository extends BaseModel
         return $data ? EntityMapper::toServiceOrder($data) : null;
     }
 
+    public function findByCustomerId(int $customerId): array
+    {
+        $query = $this->db->prepare(
+            'SELECT * FROM service_orders WHERE customer_id = :customer_id ORDER BY created_at DESC'
+        );
+        $query->execute(['customer_id' => $customerId]);
+
+        return array_map(
+            fn($data) => EntityMapper::toServiceOrder($data),
+            $query->fetchAll(PDO::FETCH_ASSOC) ?: []
+        );
+    }
+
     public function findOrdersOpen(): array
     {
         $query = $this->db->prepare(

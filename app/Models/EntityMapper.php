@@ -127,7 +127,18 @@ class EntityMapper
         );
     }
 
-    public static function toServiceOrderItem(array $data, ?ServiceOrder $serviceOrder = null): ServiceOrderItem
+    public static function toItem(array $data): Item
+    {
+        return new Item(
+            id: $data['id'] ?? 0,
+            name: $data['name'] ?? '',
+            sku: $data['sku'] ?? '',
+            quantity: (int)($data['quantity'] ?? 0),
+            unitPrice: (float)($data['unit_price'] ?? 0.00)
+        );
+    }
+
+    public static function toServiceOrderItem(array $data, ?Item $item = null, ?ServiceOrder $serviceOrder = null): ServiceOrderItem
     {
         return new ServiceOrderItem(
             id: $data['id'] ?? 0,
@@ -136,7 +147,19 @@ class EntityMapper
             unitPrice: (float)($data['unit_price'] ?? 0.00),
             total: (float)($data['total'] ?? 0.00),
             description: $data['description'] ?? null,
+            item: $item,
             serviceOrder: $serviceOrder
+        );
+    }
+
+    public static function toOrdersQueue(array $data): OrdersQueue
+    {
+        return new OrdersQueue(
+            id: $data['id'] ?? 0,
+            orderId: $data['order_id'] ?? 0,
+            status: $data['status'] ?? 'PENDING',
+            createdAt: $data['created_at'] ?? '',
+            updatedAt: $data['updated_at'] ?? ''
         );
     }
 

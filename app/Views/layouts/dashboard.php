@@ -14,13 +14,11 @@
     <aside class="sidebar bg-dark text-white p-3">
       <h4 class="mb-4">Workshop ERP</h4>
       <nav class="nav flex-column gap-1">
-        <a class="nav-link text-white" href="/dashboard">Dashboard</a>
         <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'Admin' || $_SESSION['user']['role'] === 'Attendant'): ?>
           <a class="nav-link text-white" href="/customers">Customers</a>
         <?php endif; ?>
         <a class="nav-link text-white" href="/orders">Orders</a>
-        <a class="nav-link text-white" href="/reports">Reports</a>
-        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'Admin'): ?>
+        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'Admin' || $_SESSION['user']['role'] === 'Attendant'): ?>
           <a class="nav-link text-white" href="/admin/dashboard">Admin</a>
         <?php endif; ?>
       </nav>

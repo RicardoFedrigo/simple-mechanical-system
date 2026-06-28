@@ -2,9 +2,11 @@
 
 namespace App\Services\Orders;
 
+use App\Models\ServiceOrder;
 use App\Repositories\OrderCreateRepository;
 use App\Services\Customers\CreateCustomerService;
 use App\Services\Mechanics\DelegateOrderToMechanicService;
+use App\Services\OrderQueue\AddToqueueService;
 use App\Services\Vehicles\CreateVehicleService;
 
 class CreateService
@@ -13,10 +15,11 @@ class CreateService
         private OrderCreateRepository $orderCreateRepository = new OrderCreateRepository(),
         private CreateCustomerService $createCustomerService = new CreateCustomerService(),
         private CreateVehicleService $createVehicleService = new CreateVehicleService(),
-        private DelegateOrderToMechanicService $delegateOrderToMechanicService = new DelegateOrderToMechanicService() 
+        private AddToqueueService $addToqueueService = new AddToqueueService(),
+        private DelegateOrderToMechanicService $delegateOrderToMechanicService = new DelegateOrderToMechanicService()
     ) {}
 
-    public function execute(array $data): int
+    public function execute(ServiceOrder $order, array $data): int
     {
         $customerId = isset($data['customer_id']) ? (int) $data['customer_id'] : 0;
 
@@ -50,27 +53,17 @@ class CreateService
             );
         }
 
-        $status = trim((string) ($data['status'] ?? 'PENDING')) ?: 'PENDING';
-        $subtotal = isset($data['subtotal']) ? (float) $data['subtotal'] : 0.0;
-        $tax = isset($data['tax']) ? (float) $data['tax'] : 0.0;
-        $total = isset($data['total']) ? (float) $data['total'] : ($subtotal + $tax);
+        $order->setCustomerId($customerId);
+        $order->setVehicleId($vehicleId);
+        $orderId = $this->orderCreateRepository->create($order);
 
-        $description = trim((string) ($data['description'] ?? '')) ?: null;
+        $queueId = $this->addToqueueService->execute($orderId);
+        $wasAssigned = $this->delegateOrderToMechanicService->execute($orderId);
 
-        $orderId = $this->orderCreateRepository->createServiceOrder(
-            $customerId,
-            $vehicleId,
-            null,
-            $status,
-            $subtotal,
-            $tax,
-            $total,
-            $description
-        );
+        if ($wasAssigned) {
+            $this->addToqueueService->markWorking($queueId);
+        }
 
-
-        $this->delegateOrderToMechanicService->execute($orderId);
-            
         return $orderId;
     }
 }

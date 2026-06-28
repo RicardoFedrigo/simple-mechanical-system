@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Core\BaseModel;
+use App\Models\ServiceOrder;
 use PDO;
 
 class OrderCreateRepository extends BaseModel
@@ -52,6 +53,25 @@ class OrderCreateRepository extends BaseModel
             'tax' => $tax,
             'total' => $total,
             'service_description' => $serviceDescription,
+        ]);
+
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function create(ServiceOrder $order): int
+    {
+        $query = $this->db->prepare(
+            'INSERT INTO service_orders (customer_id, vehicle_id, mechanic_id, status, subtotal, tax, total, service_description) VALUES (:customer_id, :vehicle_id, :mechanic_id, :status, :subtotal, :tax, :total, :service_description)'
+        );
+        $query->execute([
+            'customer_id' => $order->getCustomerId(),
+            'vehicle_id' => $order->getVehicleId(),
+            'mechanic_id' => $order->getMechanicId(),
+            'status' => $order->getStatus(),
+            'subtotal' => $order->getSubtotal(),
+            'tax' => $order->getTax(),
+            'total' => $order->getTotal(),
+            'service_description' => $order->getServiceDescription(),
         ]);
 
         return (int) $this->db->lastInsertId();

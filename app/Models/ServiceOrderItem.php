@@ -10,6 +10,7 @@ class ServiceOrderItem
     private float $unitPrice = 0.00;
     private float $total = 0.00;
     private ?string $description = null;
+    private ?Item $item = null;
     private ?ServiceOrder $serviceOrder = null;
 
     public function __construct(
@@ -19,6 +20,7 @@ class ServiceOrderItem
         float $unitPrice = 0.00,
         float $total = 0.00,
         ?string $description = null,
+        ?Item $item = null,
         ?ServiceOrder $serviceOrder = null
     ) {
         $this->id = $id;
@@ -27,7 +29,19 @@ class ServiceOrderItem
         $this->unitPrice = $unitPrice;
         $this->total = $total;
         $this->description = $description;
+        $this->item = $item;
         $this->serviceOrder = $serviceOrder;
+    }
+
+    public function getItem(): ?Item
+    {
+        return $this->item;
+    }
+
+    public function setItem(?Item $item): self
+    {
+        $this->item = $item;
+        return $this;
     }
 
     public function getId(): int

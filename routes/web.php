@@ -2,27 +2,47 @@
 
 use App\Controllers\AdminController;
 use App\Controllers\AuthController;
+use App\Controllers\CustomerController;
 use App\Controllers\HomeController;
 use App\Controllers\OrderController;
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\GuestMiddleware;
+use App\Services\AuthService;
+use App\Repositories\UserRepository;
 
-$router->get('/', [new HomeController(), 'dashboard'], [AuthMiddleware::class]);
-$router->get('/dashboard', [new HomeController(), 'dashboard'], [AuthMiddleware::class]);
-$router->get('/customers', [new HomeController(), 'customers'], [AuthMiddleware::class]);
-$router->get('/reports', [new HomeController(), 'reports'], [AuthMiddleware::class]);
+$authController = new AuthController(new AuthService(new UserRepository()));
 
-$router->get('/orders', [new OrderController(), 'index'], [AuthMiddleware::class]);
-$router->get('/orders/create', [new OrderController(), 'create'], [AuthMiddleware::class]);
-$router->post('/orders', [new OrderController(), 'store'], [AuthMiddleware::class]);
-$router->post('/orders/status', [new OrderController(), 'updateStatus'], [AuthMiddleware::class]);
-$router->get('/orders/*', [new OrderController(), 'show'], [AuthMiddleware::class]);
+$homeController = new HomeController();
+$customerController = new CustomerController();
 
-$router->get('/login', [new AuthController(new App\Services\AuthService(new App\Repositories\UserRepository())), 'loginForm'], [GuestMiddleware::class]);
-$router->post('/login', [new AuthController(new App\Services\AuthService(new App\Repositories\UserRepository())), 'login'], [GuestMiddleware::class]);
-$router->post('/logout', [new AuthController(new App\Services\AuthService(new App\Repositories\UserRepository())), 'logout'], [AuthMiddleware::class]);
+$router->get('/', [$homeController, 'dashboard'], [AuthMiddleware::class]);
+$router->get('/dashboard', [$homeController, 'dashboard'], [AuthMiddleware::class]);
+$router->get('/customers', [$homeController, 'customers'], [AuthMiddleware::class]);
+$router->get('/customers/*/orders', [$customerController, 'orders'], [AuthMiddleware::class]);
+$router->get('/reports', [$homeController, 'reports'], [AuthMiddleware::class]);
 
-$router->get('/admin/dashboard', [new AdminController(), 'dashboard'], [AuthMiddleware::class, AdminMiddleware::class]);
-$router->get('/admin/users', [new AdminController(), 'users'], [AuthMiddleware::class, AdminMiddleware::class]);
-$router->get('/admin/settings', [new AdminController(), 'settings'], [AuthMiddleware::class, AdminMiddleware::class]);
+$orderController = new OrderController();
+
+$router->get('/orders', [$orderController, 'index'], [AuthMiddleware::class]);
+$router->get('/orders/create', [$orderController, 'create'], [AuthMiddleware::class]);
+$router->post('/orders', [$orderController, 'store'], [AuthMiddleware::class]);
+$router->post('/orders/status', [$orderController, 'updateStatus'], [AuthMiddleware::class]);
+$router->post('/orders/add-item', [$orderController, 'addOrderItem'], [AuthMiddleware::class]);
+$router->get('/orders/search-items', [$orderController, 'searchItems'], [AuthMiddleware::class]);
+$router->get('/orders/*', [$orderController, 'show'], [AuthMiddleware::class]);
+
+$router->get('/login', [$authController, 'loginForm'], [GuestMiddleware::class]);
+$router->post('/login', [$authController, 'login'], [GuestMiddleware::class]);
+$router->post('/logout', [$authController, 'logout'], [AuthMiddleware::class]);
+
+$adminController = new AdminController();
+
+$router->get('/admin/dashboard', [$adminController, 'dashboard'], [AuthMiddleware::class, AdminMiddleware::class]);
+$router->get('/admin/users', [$adminController, 'users'], [AuthMiddleware::class, AdminMiddleware::class]);
+$router->get('/admin/users/*/edit', [$adminController, 'editUser'], [AuthMiddleware::class, AdminMiddleware::class]);
+$router->post('/admin/users/*/edit', [$adminController, 'updateUser'], [AuthMiddleware::class, AdminMiddleware::class]);
+$router->post('/admin/users/*/deactivate', [$adminController, 'deactivateUser'], [AuthMiddleware::class, AdminMiddleware::class]);
+$router->get('/admin/users/*', [$adminController, 'userDetails'], [AuthMiddleware::class, AdminMiddleware::class]);
+$router->get('/admin/settings', [$adminController, 'settings'], [AuthMiddleware::class, AdminMiddleware::class]);
+

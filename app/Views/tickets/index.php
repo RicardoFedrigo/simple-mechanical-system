@@ -27,7 +27,7 @@ ob_start(); ?>
                 <?php else: ?>
                     <?php foreach ($tickets as $ticket): ?>
                         <tr>
-                            <td><strong>#<?= htmlspecialchars($ticket['id']) ?></strong></td>
+                            <td><strong>#<?= htmlspecialchars($ticket->getId()) ?></strong></td>
                             <td><?= htmlspecialchars($ticket['customer_name'] ?? 'N/A') ?></td>
                             <td><?= htmlspecialchars($ticket['vehicle_model'] ?? 'N/A') ?></td>
                             <td><strong>$<?= number_format((float)$ticket['total'], 2) ?></strong></td>

@@ -17,6 +17,28 @@ class UpdateOrderStatusService
             throw new \InvalidArgumentException('Invalid order status.');
         }
 
+        $order = $this->orderListRepository->findById($orderId);
+        if (!$order) {
+            throw new \InvalidArgumentException('Order not found.');
+        }
+
+        if ($order->getStatus() === 'COMPLETED') {
+            throw new \InvalidArgumentException('Cannot change status of a completed order.');
+        }
+
+        if ($order->getStatus() === $status) {
+            return true;
+        }
+
+        // Logic: PENDING -> IN_PROGRESS -> COMPLETED
+        if ($order->getStatus() === 'PENDING' && $status !== 'IN_PROGRESS') {
+             throw new \InvalidArgumentException('A pending order can only be changed to IN_PROGRESS.');
+        }
+
+        if ($order->getStatus() === 'IN_PROGRESS' && $status !== 'COMPLETED') {
+             throw new \InvalidArgumentException('An order in progress can only be changed to COMPLETED.');
+        }
+
         return $this->orderListRepository->updateStatus($orderId, $status);
     }
 }

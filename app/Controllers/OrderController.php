@@ -4,13 +4,16 @@ namespace App\Controllers;
 
 use App\Core\BaseController;
 use App\Core\Request;
+use App\Models\ServiceOrder;
 use App\Repositories\CustomerRepository;
 use App\Repositories\OrderListRepository;
-use App\Services\CarBrands\GetAllCarBrands;
+use App\Services\Orders\AddOrderItemService;
+use App\Services\Items\SearchItemService;
 use App\Services\Orders\CreateService;
 use App\Services\Orders\GetOrderListService;
 use App\Services\Orders\GetOrderByIdService;
 use App\Services\Orders\UpdateOrderStatusService;
+use App\Services\CarBrands\GetAllCarBrands;
 
 class OrderController extends BaseController
 {
@@ -18,6 +21,8 @@ class OrderController extends BaseController
     private CreateService $createOrderService;
     private GetOrderListService $getOrderListService;
     private UpdateOrderStatusService $updateOrderStatusService;
+    private AddOrderItemService $addOrderItemService;
+    private SearchItemService $searchItemService;
     private CustomerRepository $customerRepository;
     private OrderListRepository $orderListRepository;
     private GetOrderByIdService $getOrderByIdService;
@@ -28,6 +33,8 @@ class OrderController extends BaseController
         $this->createOrderService = new CreateService();
         $this->getOrderListService = new GetOrderListService();
         $this->updateOrderStatusService = new UpdateOrderStatusService();
+        $this->addOrderItemService = new AddOrderItemService();
+        $this->searchItemService = new SearchItemService();
         $this->getOrderByIdService = new GetOrderByIdService();
         $this->customerRepository = new CustomerRepository();
         $this->orderListRepository = new OrderListRepository();
@@ -66,21 +73,24 @@ class OrderController extends BaseController
         }
 
         $order = $this->getOrderByIdService->execute($id);
+        error_log("Order Details for ID " . $id . ": " . print_r($order, true));
         if (!$order) {
             http_response_code(404);
             return $this->view('404', ['message' => 'Order not found']);
         }
 
         $user = $_SESSION['user'] ?? [];
-        if (($user['role'] ?? '') === 'Mechanic' && $order['mechanic_user_id'] !== ($user['id'] ?? 0)) {
-            http_response_code(403);
-            return $this->view('404', ['message' => 'Order not found']);
+        if (($user['role'] ?? '') === 'Mechanic') {
+            if (($order->getMechanic()?->getUserId() ?? 0) !== ($user['id'] ?? 0)) {
+                http_response_code(403);
+                return $this->view('404', ['message' => 'Order not found']);
+            }
         }
 
         $items = $this->getOrderByIdService->items($id);
 
         return $this->view('orders/details', [
-            'title' => 'Order #' . $order['id'],
+            'title' => 'Order #' . $order->getId(),
             'order' => $order,
             'items' => $items,
             'currentRole' => $user['role'] ?? null,
@@ -102,6 +112,14 @@ class OrderController extends BaseController
 
     public function store(Request $request): void
     {
+        $order = new ServiceOrder(
+            status: 'PENDING',
+            subtotal: 0.0,
+            tax: 0.0,
+            total: 0.0,
+            serviceDescription: trim((string) $request->input('description', '')) ?: null
+        );
+
         $form = [
             'customer_id' => (int) $request->input('customer_id', 0),
             'customer_name' => trim((string) $request->input('customer_name', '')),
@@ -111,15 +129,10 @@ class OrderController extends BaseController
             'vehicle_model' => trim((string) $request->input('vehicle_model', '')),
             'vehicle_plate' => trim((string) $request->input('vehicle_plate', '')),
             'vehicle_year' => $request->input('vehicle_year', ''),
-            'description' => trim((string) $request->input('description', '')),
-            'status' => 'PENDING',
-            'subtotal' => 0.0,
-            'tax' => 0.0,
-            'total' => 0.0,
         ];
 
         try {
-            $this->createOrderService->execute($form);
+            $this->createOrderService->execute($order, $form);
             flash('success', 'Service order created successfully.');
             $this->redirect('/orders');
         } catch (\Throwable $e) {
@@ -131,26 +144,7 @@ class OrderController extends BaseController
     public function updateStatus(Request $request): void
     {
         $orderId = (int) $request->input('order_id', 0);
-        $status = trim((string) $request->input('status', ''));
-        $user = $_SESSION['user'] ?? [];
-        $userId = $user['id'] ?? 0;
-
-        if ($orderId <= 0 || $status === '') {
-            flash('error', 'Invalid order status update.');
-            $this->redirect('/orders');
-        }
-
-        $order = $this->getOrderByIdService->execute($orderId);
-        if (!$order) {
-            flash('error', 'Order not found.');
-            $this->redirect('/orders');
-        }
-
-        if (($user['role'] ?? '') === 'Mechanic' && $order['mechanic_user_id'] !== $userId) {
-            http_response_code(403);
-            flash('error', 'You are not authorized to update this order.');
-            $this->redirect('/orders');
-        }
+        $status = (string) $request->input('status', '');
 
         try {
             $this->updateOrderStatusService->execute($orderId, $status);
@@ -160,5 +154,44 @@ class OrderController extends BaseController
         }
 
         $this->redirect('/orders/' . $orderId);
+    }
+
+    public function addOrderItem(Request $request): void
+    {
+        $orderId = (int) $request->input('order_id', 0);
+        $itemId = (int) $request->input('item_id', 0);
+        $quantity = (int) $request->input('quantity', 1);
+        $unitPrice = (float) $request->input('unit_price', 0.0);
+
+        $user = $_SESSION['user'] ?? [];
+        $userId = $user['id'] ?? 0;
+
+        if (($user['role'] ?? '') !== 'Mechanic') {
+            http_response_code(403);
+            flash('error', 'Only mechanics can add items.');
+            $this->redirect('/orders/' . $orderId);
+        }
+
+        try {
+            $this->addOrderItemService->execute($orderId, $userId, $itemId, $quantity, $unitPrice);
+            flash('success', 'Item added successfully.');
+        } catch (\Throwable $e) {
+            flash('error', 'Failed to add item: ' . $e->getMessage());
+        }
+
+        $this->redirect('/orders/' . $orderId);
+    }
+
+    public function searchItems(Request $request): string
+    {
+        $term = trim((string) $request->input('term', ''));
+        $items = $this->searchItemService->execute($term);
+
+        return json_encode(array_map(fn($item) => [
+            'id' => $item->getId(),
+            'name' => $item->getName(),
+            'sku' => $item->getSku(),
+            'unit_price' => $item->getUnitPrice()
+        ], $items));
     }
 }

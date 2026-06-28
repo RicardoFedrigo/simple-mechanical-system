@@ -198,11 +198,22 @@ class OrderListRepository extends BaseModel
     public function findItemsByOrderId(int $orderId): array
     {
         $query = $this->db->prepare(
-            'SELECT * FROM service_order_items WHERE service_order_id = :order_id ORDER BY id ASC'
+            'SELECT soi.*, i.name, i.sku, i.unit_price 
+             FROM service_order_items soi
+             JOIN items i ON i.id = soi.items_id
+             WHERE soi.service_order_id = :order_id ORDER BY soi.id ASC'
         );
         $query->execute(['order_id' => $orderId]);
 
-        return array_map(fn($data) => EntityMapper::toServiceOrderItem($data), $query->fetchAll(PDO::FETCH_ASSOC) ?: []);
+        return array_map(function ($data) {
+            $item = EntityMapper::toItem([
+                'id' => $data['items_id'],
+                'name' => $data['name'],
+                'sku' => $data['sku'],
+                'unit_price' => $data['unit_price']
+            ]);
+            return EntityMapper::toServiceOrderItem($data, $item);
+        }, $query->fetchAll(PDO::FETCH_ASSOC) ?: []);
     }
 
     public function updateStatus(int $id, string $status): bool

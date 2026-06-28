@@ -26,6 +26,7 @@ $files = [
     $root . '/database/migrations/001_schema.sql',
     $root . '/database/seeds/seed_roles.sql',
     $root . '/database/seeds/seed_users.sql',
+    $root . '/database/seeds/seed_mechanic.sql',
 ];
 
 foreach ($files as $file) {

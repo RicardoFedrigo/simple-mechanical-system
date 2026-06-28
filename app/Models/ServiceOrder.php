@@ -203,11 +203,35 @@ class ServiceOrder
         return $this->mechanic;
     }
 
+    public function getMechanicName(): ?string
+    {
+        return $this->mechanic?->getName();
+    }
+
+    public function getCustomerName(): ?string
+    {
+        return $this->customer?->getName();
+    }
+
+    public function getCustomerPhone(): ?string
+    {
+        return $this->customer?->getPhone();
+    }
+
+    public function getCustomerEmail(): ?string
+    {
+        return $this->customer?->getEmail();
+    }
+
     public function setMechanic(?Mechanic $mechanic): self
     {
         $this->mechanic = $mechanic;
         return $this;
     }
+
+    /**
+     * @return ServiceOrderItem[]
+     */
 
     /**
      * @return ServiceOrderItem[]

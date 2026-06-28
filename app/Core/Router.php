@@ -7,12 +7,12 @@ class Router
     /** @var array<int, array{method: string, path: string, handler: callable|string, middleware: array<int, string>}> */
     private array $routes = [];
 
-    public function get(string $path, callable|string $handler, array $middleware = []): void
+    public function get(string $path, callable|string|array $handler, array $middleware = []): void
     {
         $this->routes[] = ['method' => 'GET', 'path' => $path, 'handler' => $handler, 'middleware' => $middleware];
     }
 
-    public function post(string $path, callable|string $handler, array $middleware = []): void
+    public function post(string $path, callable|string|array $handler, array $middleware = []): void
     {
         $this->routes[] = ['method' => 'POST', 'path' => $path, 'handler' => $handler, 'middleware' => $middleware];
     }
@@ -33,7 +33,7 @@ class Router
         }
 
         http_response_code(404);
-        echo '404 Not Found';
+        echo View::render('404', ['title' => 'Page Not Found']);
         return null;
     }
 
@@ -44,12 +44,17 @@ class Router
         return (bool) preg_match('#^' . $pattern . '$#', $uri);
     }
 
-    private function callHandler(callable|string $handler, Request $request): mixed
+    private function callHandler(callable|string|array $handler, Request $request): mixed
     {
         if (is_string($handler)) {
             [$controller, $method] = explode('@', $handler, 2);
             $controllerInstance = new $controller();
             return $controllerInstance->$method($request);
+        }
+
+        if (is_array($handler) && count($handler) === 2) {
+            [$controller, $method] = $handler;
+            return $controller->$method($request);
         }
 
         return $handler($request);

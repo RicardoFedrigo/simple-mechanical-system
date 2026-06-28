@@ -7,9 +7,6 @@ ob_start(); ?>
   <?php endif; ?>
 </div>
 
-<?php if (($currentRole ?? '') === 'Mechanic'): ?>
-  <div class="alert alert-info mb-3">Showing only service orders assigned to you.</div>
-<?php endif; ?>
 <form method="get" action="/orders" class="row g-2 mb-3">
   <?php $term = htmlspecialchars($_GET['term'] ?? '');
   $status = htmlspecialchars($_GET['status'] ?? ''); ?>
@@ -37,6 +34,7 @@ ob_start(); ?>
         <tr>
           <th scope="col">ID</th>
           <th scope="col">Customer</th>
+          <th scope="col">Mechanic</th>
           <th scope="col">Vehicle</th>
           <th scope="col">Total</th>
           <th scope="col">Status</th>
@@ -54,6 +52,7 @@ ob_start(); ?>
             <tr>
               <td><strong>#<?= htmlspecialchars($ticket->getId()) ?></strong></td>
               <td><?= htmlspecialchars($ticket->getCustomer()?->getName() ?? 'N/A') ?></td>
+              <td><?= htmlspecialchars($ticket->getMechanic()?->getName() ?? 'N/A') ?></td>
               <td><?= htmlspecialchars($ticket->getVehicle()?->getModel() ?? 'N/A') ?></td>
               <td><strong>$<?= number_format($ticket->getTotal(), 2) ?></strong></td>
               <td>
